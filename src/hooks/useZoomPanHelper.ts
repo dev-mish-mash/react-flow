@@ -7,11 +7,11 @@ import { getRectOfNodes } from '../utils/graph';
 import { FitViewParams, FlowTransform, ZoomPanHelperFunctions } from '../types';
 
 const initialZoomPanHelper: ZoomPanHelperFunctions = {
-  zoomIn: () => {},
-  zoomOut: () => {},
-  zoomTo: (_: number) => {},
-  transform: (_: FlowTransform) => {},
-  fitView: (_: FitViewParams = { padding: 0.1 }) => {},
+  zoomIn: () => { },
+  zoomOut: () => { },
+  zoomTo: (_: number) => { },
+  transform: (_: FlowTransform) => { },
+  fitView: (_: FitViewParams = { padding: 0.1 }) => { },
   initialized: false,
 };
 
@@ -49,7 +49,11 @@ const usePanZoomHelper = (): ZoomPanHelperFunctions => {
           const y = height / 2 - boundsCenterY * clampedZoom;
           const transform = zoomIdentity.translate(x, y).scale(clampedZoom);
 
-          d3Zoom.transform(d3Selection, transform);
+          if (options.animate) {
+            options.animate({ x: x, y: y, zoom: clampedZoom })
+          } else {
+            d3Zoom.transform(d3Selection, transform);
+          }
         },
         initialized: true,
       };
