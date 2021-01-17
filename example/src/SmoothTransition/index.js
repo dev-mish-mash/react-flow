@@ -1,51 +1,44 @@
+import { Easing, Tween } from 'es6-tween';
 import React, { useState } from 'react';
 
-import ReactFlow, { addEdge, MiniMap, Controls } from 'react-flow-renderer';
-import { useEffect } from 'react';
+import ReactFlow, { addEdge, Background, ReactFlowProvider, useZoomPanHelper, useStore } from 'react-flow-renderer';
 
 const initialElements = [
-  { id: '1', type: 'input', data: { label: 'Node 1' }, position: { x: 250, y: 5 } },
-  { id: '2', data: { label: 'Node 2' }, position: { x: 100, y: 100 } },
-  { id: '3', data: { label: 'Node 3' }, position: { x: 400, y: 100 } },
-  { id: '4', data: { label: 'Node 4' }, position: { x: 400, y: 200 } },
+  { id: '1', type: 'input', data: { label: 'Smooth Transition' }, position: { x: 250, y: 5 } },
+  { id: '2', type: 'output', data: { label: 'Scroll it!' }, position: { x: 100, y: 100 } },
+  { id: '3', data: { label: 'applied to zoom / fit-view' }, position: { x: 400, y: 100 } },
   { id: 'e1-2', source: '1', target: '2' },
   { id: 'e1-3', source: '1', target: '3' },
-  { id: 'e3-4', source: '3', target: '4' },
 ];
 
 const SmoothTranstion = () => {
+  const store = useStore();
+  const [rfInstance, setRfInstance] = useState(null);
   const [elements, setElements] = useState(initialElements);
-  const [isHidden, setIsHidden] = useState(false);
   const onConnect = (params) => setElements((els) => addEdge(params, els));
 
-  useEffect(() => {
-    setElements((els) =>
-      els.map((e) => {
-        e.isHidden = isHidden;
-        return e;
-      })
-    );
-  }, [isHidden]);
+  const onLoad = instance => {
+    instance.fitView();
+    setRfInstance(instance);
+  }
+
+  console.log(store);
+  // const handleZoomIn = () => {
+  //   new Tween()
+  // }
 
   return (
-    <ReactFlow elements={elements} onConnect={onConnect}>
-      <MiniMap />
-      <Controls />
-
+    <ReactFlow
+      elements={elements}
+      onConnect={onConnect}
+      onLoad={onLoad}
+    >
       <div style={{ position: 'absolute', left: 10, top: 10, zIndex: 4 }}>
-        <div>
-          <label htmlFor="ishidden">
-            isHidden
-            <input
-              id="ishidden"
-              type="checkbox"
-              checked={isHidden}
-              onChange={(event) => setIsHidden(event.target.checked)}
-              className="react-flow__ishidden"
-            />
-          </label>
-        </div>
+        <button>zoom in</button>
+        <button>zoom out</button>
+        <button>fit view</button>
       </div>
+      <Background color="#aaa" gap={16} />
     </ReactFlow>
   );
 };
